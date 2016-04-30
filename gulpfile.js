@@ -82,6 +82,22 @@ gulp.task('extras', function () {
     .pipe($.size());
 });
 
+// extras-languages
+gulp.task('extras-languages', function () {
+  return gulp.src(['app/languages/*.json'])
+    .pipe(gulp.dest('dist/languages/'))
+    .pipe($.size());
+});
+
+// extras-js
+gulp.task('extras-js', function() {
+    return gulp.src([
+      'app/bower_components/mustache.js/mustache.js'
+    ])
+    .pipe(gulp.dest('dist/scripts/vendor/'))
+    .pipe($.size());
+});
+
 gulp.task('serve', function() {
   gulp.src('dist')
     .pipe($.webserver({
@@ -112,7 +128,7 @@ gulp.task('minify', ['minify:js', 'minify:css']);
 
 gulp.task('clean', del.bind(null, 'dist'));
 
-gulp.task('bundle', ['html', 'styles', 'scripts', 'images', 'fonts', 'extras']);
+gulp.task('bundle', ['html', 'styles', 'scripts', 'images', 'fonts', 'extras', 'extras-languages', 'extras-js']);
 
 gulp.task('clean-bundle', sync(['clean', 'bundle']));
 

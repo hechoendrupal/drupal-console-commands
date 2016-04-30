@@ -21,11 +21,34 @@
 
     <div id="app"></div>
 
-    <!-- build:js scripts/vendor.js -->
-    <!-- bower:js -->
+    <div class="sidebar">
+      <div id="commands">
+        <ul class="namespace-list">
+        </ul>
+      </div>
+    </div>
+
+    <!-- build:js scripts/vendor/jquery.js -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
-    <!-- endbower -->
     <!-- endbuild -->
+
+    <!-- build:js scripts/vendor/mustache.js -->
+    <script scr="bower_components/mustache.js/mustache.js"></script>
+    <!-- endbuild -->
+
+<script type="x-tmpl-mustache" id="commands_template">
+<li>
+  <h3>{{namespace}}</h3>
+  <ul class="list">
+  {{#commands}}
+    <li>
+      <span class="name" onClick="alert('{{key}}')">{{name}}</span>
+    </li>
+  {{/commands}}
+  </ul>
+</li>
+</script>
+
     <script src="scripts/app.js"></script>
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     <script>
