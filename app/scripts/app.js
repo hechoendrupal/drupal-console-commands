@@ -12,7 +12,9 @@ $(function() {
 	var language = window.location.hash.substr(1);
 
 	loadCommands(language);
+
 });
+
 function loadCommands(language) {
 
   location.hash = '';
@@ -22,6 +24,16 @@ function loadCommands(language) {
   }
 
   $.getJSON("languages/"+language+".json", function(data) {
+
+		console.log(data.commands);
+
+		var search = new JsSearch.Search();
+		search.addIndex('name');
+		search.addDocuments(data.commands);
+		var result = search.search('generate');
+
+		console.log(result);
+
     // var languages = data.application.languages;
     var namespaces = data.commands;
     $.each(namespaces, function(namespace, commands) {
@@ -36,4 +48,8 @@ function loadCommands(language) {
       $(commandsRender).appendTo('#commands > .namespace-list');
     });
   }).fail(function(jqXHR, textStatus, errorThrown) { loadCommands('en'); });
+}
+
+function search(commandName){
+	console.log(commandName);
 }

@@ -92,7 +92,8 @@ gulp.task('extras-languages', function () {
 // extras-js
 gulp.task('extras-js', function() {
     return gulp.src([
-      'app/bower_components/mustache.js/mustache.js'
+      'app/bower_components/mustache.js/mustache.js',
+      'app/bower_components/js-search/dist/js-search.js'
     ])
     .pipe(gulp.dest('dist/scripts/vendor/'))
     .pipe($.size());
