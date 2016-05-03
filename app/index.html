@@ -24,6 +24,11 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
+            <div class="row">
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Search" onkeyup="search(this.value)">
+                </div>
+            </div>
           <div id="commands">
             <ul class="nav nav-sidebar namespace-list">
             </ul>
@@ -42,6 +47,10 @@
 
     <!-- build:js scripts/vendor/mustache.js -->
     <script scr="bower_components/mustache.js/mustache.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js scripts/vendor/js-search.js -->
+    <script scr="bower_components/js-search/dist/js-search.js"></script>
     <!-- endbuild -->
 
 <script type="x-tmpl-mustache" id="commands_template">
