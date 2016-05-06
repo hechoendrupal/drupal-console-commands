@@ -29,15 +29,16 @@
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+                    <<s></s>pan class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="index.html">Drupal Console Commands</a>
             </div>
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse" id="commands">
+
                 <ul class="nav navbar-nav side-nav namespace-list">
                   <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search" onkeyup="search(this.value)">
+                    <input type="text" class="form-control" placeholder="Search" onkeyup="searchCommand(this.value)">
                   </div>
                 </ul>
             </div>
@@ -47,22 +48,12 @@
         <div id="page-wrapper">
 
             <div class="container-fluid">
-
                 <!-- Page Heading -->
                 <div class="row">
                     <div class="col-lg-12">
-                        <h1 class="page-header">
-                            Blank Page
-                            <small>Subheading</small>
-                        </h1>
-                        <ol class="breadcrumb">
-                            <li>
-                                <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
-                            </li>
-                            <li class="active">
-                                <i class="fa fa-file"></i> Blank Page
-                            </li>
-                        </ol>
+                      <h1 class="page-header">Drupal Console Commands</h1>
+                    </div>
+                    <div class="col-lg-12 command">
                     </div>
                 </div>
                 <!-- /.row -->
@@ -94,11 +85,100 @@
     <ul id="heading{{namespace}}" class="collapse">
         {{#commands}}
           <li>
-              <a href="#" onClick="alert('{{key}}')">{{name}}</a>
+              <a href="#" onClick="renderCommand('{{namespace}}','{{key}}')">{{name}}</a>
           </li>
         {{/commands}}
     </ul>
 </li>
+</script>
+
+<script type="x-tmpl-mustache" id="command_template">
+<ol class="breadcrumb">
+    <li class="active">
+        <i class="fa fa-file"></i> {{ command.name }}
+    </li>
+</ol>
+<pre>
+  <code>
+    {{ command.description }}
+  </code>
+</pre>
+</script>
+
+<script type="text/javascript">
+
+var commands;
+var searchText;
+
+function loadCommands(language, search) {
+  location.hash = '';
+
+  if(!language) {
+    language = 'en';
+  }
+
+  $.getJSON("languages/"+language+".json", function(data) {
+    // var languages = data.application.languages;
+    commands = data.commands;
+    renderCommands();
+  }).fail(function(jqXHR, textStatus, errorThrown) { loadCommands('en'); });
+};
+
+function renderCommands() {
+  $('#commands > .namespace-list li').remove();
+  $.each(commands, function(namespace, commands) {
+    result = commands;
+
+    if (searchText) {
+      var search = new JsSearch.Search('key');
+      search.addIndex('name');
+      search.addDocuments(commands);
+      var result = search.search(searchText);
+    }
+
+    if (result.length > 0) {
+      var templateCommands = document.getElementById('commands_template').innerHTML;
+      var commandsRender = Mustache.render(
+        templateCommands,
+        {
+          "namespace": namespace,
+          "commands": result
+        }
+      );
+
+      $(commandsRender).appendTo('#commands > .namespace-list');
+
+      if (searchText) {
+          $('#commands > .namespace-list li > .collapse').collapse();
+      }
+    }
+
+  });
+}
+
+function searchCommand(commandName){
+  searchText = commandName;
+  renderCommands();
+};
+
+function renderCommand(namespace, commandName){
+  var filteredCommands = commands[namespace];
+  var search = new JsSearch.Search('key');
+  search.addIndex('key');
+  search.addDocuments(filteredCommands);
+  var command = search.search(commandName)[0];
+  if (command) {
+    var templateCommand = document.getElementById('command_template').innerHTML;
+    var commandRender = Mustache.render(
+      templateCommand,
+      {
+        "command": command
+      }
+    );
+    $('#page-wrapper .container-fluid .row .command').empty();
+    $(commandRender).appendTo('#page-wrapper .container-fluid .row .command');
+  }
+};
 </script>
 
     <script src="scripts/app.js"></script>
