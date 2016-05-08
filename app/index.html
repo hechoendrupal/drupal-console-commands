@@ -13,6 +13,7 @@
     <!-- build:js scripts/vendor/modernizr.js -->
     <script src="bower_components/modernizr/modernizr.js"></script>
     <!-- endbuild -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
   </head>
   <body>
     <!--[if lt IE 10]>
@@ -29,15 +30,14 @@
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                    <<s></s>pan class="icon-bar"></span>
+                    <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="index.html">Drupal Console Commands</a>
             </div>
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse" id="commands">
-
                 <ul class="nav navbar-nav side-nav namespace-list">
-                  <div class="form-group">
+                  <div class="form-group" id="search-input">
                     <input type="text" class="form-control" placeholder="Search" onkeyup="searchCommand(this.value)">
                   </div>
                 </ul>
@@ -51,9 +51,35 @@
                 <!-- Page Heading -->
                 <div class="row">
                     <div class="col-lg-12">
-                      <h1 class="page-header">Drupal Console Commands</h1>
+                      <!-- <h1 class="page-header">Drupal Console Commands</h1> -->
                     </div>
                     <div class="col-lg-12 command">
+                      <h1 class="page-header">Drupal Console Commands</h1>
+                      <div class="container-section">
+                        <img src="images/drupal-console-logo.png" alt="Drupal Console Logo" />
+                        <p>
+                          Welcome to the quick-reference for Drupal Console Commands.
+                        </p>
+                        <p>
+                          This reference includes all the Drupal Console commands for 1.0.0-alpha1.
+                        </p>
+                        <h3>What is Drupal Console</h3>
+                        <p>
+                            The new CLI for Drupal. A tool to generate boilerplate code, interact with and debug Drupal.
+                        </p>
+
+                        <h3>More info about Drupal Console</h3>
+                        <p>
+                          Project landing page <a href="http://drupalconsole.com/">http://drupalconsole.com/</a>
+                        </p>
+                        <p>
+                          Project documentation page <a href="http://docs.drupalconsole.com/">http://docs.drupalconsole.com/</a>
+                        </p>
+                        <p>
+                          Project support page <a href="https://gitter.im/hechoendrupal/DrupalConsole">https://gitter.im/hechoendrupal/DrupalConsole</a>
+                        </p>
+
+                      </div>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -71,38 +97,107 @@
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <!-- endbuild -->
 
-    <!-- build:js scripts/vendor/mustache.js -->
-    <script scr="bower_components/mustache.js/mustache.js"></script>
+    <!-- build:js scripts/vendor/twig.js -->
+    <script scr="bower_components/twig.js/twig.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/vendor/js-search.js -->
     <script scr="bower_components/js-search/dist/js-search.js"></script>
     <!-- endbuild -->
 
-<script type="x-tmpl-mustache" id="commands_template">
+<script type="text" id="commands_template">
 <li>
-    <a href="javascript:;" data-toggle="collapse" data-target="#heading{{namespace}}"><i class="fa fa-fw fa-arrows-v"></i> {{namespace}} <i class="fa fa-fw fa-caret-down"></i></a>
+    <a href="javascript:;" class="collapsed" data-toggle="collapse" data-target="#heading{{namespace}}"> {{namespace}} <i class="fa fa-fw fa-caret-up"></i></a>
     <ul id="heading{{namespace}}" class="collapse">
-        {{#commands}}
+        {% for command in commands %}
           <li>
-              <a href="#" onClick="renderCommand('{{namespace}}','{{key}}')">{{name}}</a>
+              <a href="#" onClick="renderCommand('{{namespace}}','{{command.key}}')">{{command.name}}</a>
           </li>
-        {{/commands}}
+        {% endfor %}
     </ul>
 </li>
 </script>
 
-<script type="x-tmpl-mustache" id="command_template">
-<ol class="breadcrumb">
-    <li class="active">
-        <i class="fa fa-file"></i> {{ command.name }}
-    </li>
-</ol>
+<script type="text" id="command_template">
+
+<h1 class="page-header"><i class="fa fa-file"></i> {{ command.name }}</h1>
+<p>{{ command.description }}</p>
+<h2>{{ command.messages.usage }}</h2>
 <pre>
   <code>
-    {{ command.description }}
+    $ drupal {{ command.name }}{% if command.arguments|length>0 %} [arguments]{% endif %}{% if command.options|length>0 %} [options]{% endif %}
+    {% for alias in aliases %}
+    $ {{ alias }}
+    {% endfor %}
   </code>
 </pre>
+{% if command.options|length>0 %}
+<h2>{{ command.messages.options }}</h2>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>
+        {{ command.messages.option  }}
+      </th>
+      <th>
+        {{ command.messages.details }}
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for option in options %}
+    <tr>
+      <th scope="row">
+        {{ option.name }}
+      </th>
+      <td>
+        {{ option.description }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% if command.arguments|length>0 %}
+<h2>{{ command.messages.arguments }}</h2>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>
+        {{ command.messages.argument  }}
+      </th>
+      <th>
+        {{ command.messages.details }}
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for argument in command.arguments %}
+    <tr>
+      <th scope="row">
+        {{ argument.name  }}
+      </th>
+      <td>
+        {{ argument.description }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% if command.examples|length>0 %}
+<h2>{{ command.messages.examples }}</h2>
+{% for example in command.examples %}
+<p> {{ example.description }} </p>
+<pre>
+  <code>
+    $ {{ example.execution }}
+  </code>
+</pre>
+{% endfor %}
+{% endif %}
 </script>
 
 <script type="text/javascript">
@@ -138,16 +233,11 @@ function renderCommands() {
 
     if (result.length > 0) {
       var templateCommands = document.getElementById('commands_template').innerHTML;
-      var commandsRender = Mustache.render(
-        templateCommands,
-        {
-          "namespace": namespace,
-          "commands": result
-        }
-      );
-
+      var template = twig({
+            data: templateCommands
+      });
+      commandsRender = template.render({namespace: namespace, commands: result});
       $(commandsRender).appendTo('#commands > .namespace-list');
-
       if (searchText) {
           $('#commands > .namespace-list li > .collapse').collapse();
       }
@@ -169,12 +259,10 @@ function renderCommand(namespace, commandName){
   var command = search.search(commandName)[0];
   if (command) {
     var templateCommand = document.getElementById('command_template').innerHTML;
-    var commandRender = Mustache.render(
-      templateCommand,
-      {
-        "command": command
-      }
-    );
+    var template = twig({
+          data: templateCommand
+    });
+    commandRender = template.render({command:command, options: command.options})
     $('#page-wrapper .container-fluid .row .command').empty();
     $(commandRender).appendTo('#page-wrapper .container-fluid .row .command');
   }

@@ -1,0 +1,17 @@
+
+.side-nav>li>a.collapsed>i.fa-caret-up {
+    &:before{
+      font-family: FontAwesome;
+      content: '\F0d7';
+    }
+}
+#search-input{
+  position: fixed;
+  z-index: 3;
+  width: 285px;
+  background: #222;
+  padding: 16px;
+}
+.navbar-nav > li:nth-child(2) {
+      margin-top: 68px !important;
+}
